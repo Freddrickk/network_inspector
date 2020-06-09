@@ -1,0 +1,3 @@
+[submodule "external/htp"]
+	path = external/htp
+	url = git@github.com:ek0/htp.git
