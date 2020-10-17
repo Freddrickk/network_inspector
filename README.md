@@ -31,7 +31,7 @@ void NetworkInspectorCallback(NetworkInspector::NetworkContext& nc)
 {
     if (nc.type == NetworkInspector::ContextType::RecvCallback)
     {
-        printf("recv => IP: %s Port: %hu Buffer: %p Size=%d RecvBufferSize=%d\n",
+        printf("recv => IP: %s Port: %hu Buffer: %p Size=%#llx RecvBufferSize=%#llx\n",
                nc.ip.c_str(),
                nc.port,
                nc.buffer,
@@ -40,7 +40,7 @@ void NetworkInspectorCallback(NetworkInspector::NetworkContext& nc)
     }
     else if (nc.type == NetworkInspector::ContextType::RecvFromCallback)
     {
-        printf("recvfrom => IP: %s Port: %hu Buffer: %p Size=%d  RecvBufferSize=%d\n",
+        printf("recvfrom => IP: %s Port: %hu Buffer: %p Size=%#llx RecvBufferSize=%#llx\n",
                nc.ip.c_str(),
                nc.port,
                nc.buffer,
@@ -49,7 +49,7 @@ void NetworkInspectorCallback(NetworkInspector::NetworkContext& nc)
     }
     else if (nc.type == NetworkInspector::ContextType::SendCallback)
     {
-        printf("send => IP: %s Port: %hu Buffer: %p Size=%d\n",
+        printf("send => IP: %s Port: %hu Buffer: %p Size=%#llx\n",
                nc.ip.c_str(),
                nc.port,
                nc.buffer,
@@ -57,7 +57,7 @@ void NetworkInspectorCallback(NetworkInspector::NetworkContext& nc)
     }
     else if (nc.type == NetworkInspector::ContextType::SendToCallback)
     {
-        printf("sendto => IP: %s Port: %hu Buffer: %p Size=%d\n",
+        printf("sendto => IP: %s Port: %hu Buffer: %p Size=%#llx\n",
                nc.ip.c_str(),
                nc.port,
                nc.buffer,

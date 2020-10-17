@@ -184,15 +184,15 @@ namespace NetworkInspector
 
             auto& ni    = NetworkInspectorManager::GetInstance();
             auto socket = ni.GetSocket(s);
-            if (socket && ni.IsSocketTracked(*socket))
+            if (socket && ni.IsSocketTracked(*socket) && len >= 0)
             {
-                NetworkContext context;
+                NetworkContext context   = {};
                 context.type             = ContextType::SendCallback;
                 context.socket_type      = socket->GetType();
                 context.ip               = socket->GetIPString();
                 context.port             = socket->GetPort();
                 context.buffer           = buf;
-                context.size             = len;
+                context.size             = (size_t)len;
                 context.recv_buffer_size = 0;
                 context.backtrace        = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "send"), ctx->rsp);
 
@@ -216,15 +216,15 @@ namespace NetworkInspector
 
             auto& ni    = NetworkInspectorManager::GetInstance();
             auto socket = ni.GetSocket(s);
-            if (socket)
+            if (socket && len >= 0)
             {
                 const unsigned short udp_port = socket->GetPort() == 0 && to != nullptr ? ntohs(to->sin_port) : socket->GetPort();
                 if ((socket->GetType() == SocketType::SocketTCP && ni.IsSocketTracked(*socket)) ||
                     (socket->GetType() == SocketType::SocketUDP && to != nullptr && ni.IsSocketAddressTracked(to->sin_addr.s_addr, udp_port)))
                 {
-                    NetworkContext context;
-                    context.type        = ContextType::SendToCallback;
-                    context.socket_type = socket->GetType();
+                    NetworkContext context = {};
+                    context.type           = ContextType::SendToCallback;
+                    context.socket_type    = socket->GetType();
                     if (context.socket_type == SocketType::SocketUDP && to != nullptr)
                     {
                         context.ip   = Socket::GetIPAddressStringFromPacked(to->sin_addr.s_addr);
@@ -236,7 +236,7 @@ namespace NetworkInspector
                         context.port = socket->GetPort();
                     }
                     context.buffer           = buf;
-                    context.size             = len;
+                    context.size             = (size_t)len;
                     context.recv_buffer_size = 0;
                     context.backtrace        = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "sendto"), ctx->rsp);
 
@@ -285,16 +285,16 @@ namespace NetworkInspector
             if (nb_bytes_received >= 0 && rd)
             {
                 auto socket = ni.GetSocket(rd->s);
-                if (socket)
+                if (socket && rd->len >= 0)
                 {
-                    NetworkContext context;
+                    NetworkContext context   = {};
                     context.type             = ContextType::RecvCallback;
                     context.socket_type      = socket->GetType();
                     context.ip               = socket->GetIPString();
                     context.port             = socket->GetPort();
                     context.buffer           = (unsigned char*)rd->buf;
-                    context.size             = nb_bytes_received;
-                    context.recv_buffer_size = rd->len;
+                    context.size             = (size_t)nb_bytes_received;
+                    context.recv_buffer_size = (size_t)rd->len;
                     context.backtrace        = rd->backtrace;
 
                     ni.CallCallback(context);
@@ -356,7 +356,7 @@ namespace NetworkInspector
             if (nb_bytes_received >= 0 && rd)
             {
                 auto socket = ni.GetSocket(rd->s);
-                if (socket)
+                if (socket && rd->len >= 0)
                 {
                     const sockaddr_in* addr_from = (sockaddr_in*)rd->from;
                     const unsigned short udp_port =
@@ -380,8 +380,8 @@ namespace NetworkInspector
                         }
 
                         context.buffer           = (unsigned char*)rd->buf;
-                        context.size             = nb_bytes_received;
-                        context.recv_buffer_size = rd->len;
+                        context.size             = (size_t)nb_bytes_received;
+                        context.recv_buffer_size = (size_t)rd->len;
                         context.backtrace        = rd->backtrace;
 
                         ni.CallCallback(context);

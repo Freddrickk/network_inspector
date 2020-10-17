@@ -36,21 +36,21 @@ namespace NetworkInspector
         std::string ip;
 
         /* Contains the port used for the network communication */
-        unsigned short port;
+        uint16_t port;
 
         /* Contains the buffer sent/received. */
         /* This data can be modified at will although changing this pointer will only work when sending data */
-        unsigned char* buffer;
+        uint8_t* buffer;
 
         /* Contains the size of the buffer */
         /* This value can be modified and must match the size of the data in the buffer. */
-        int size;
+        size_t size;
 
         /* Contains the backtrace when API was called (send, recv, sendto, recvfrom) */
         std::vector<uintptr_t> backtrace;
 
         /* Contains the size of the buffer on receive operations (RecvCallback and RecvFromCallback) */
-        int recv_buffer_size;
+        size_t recv_buffer_size;
     };
 
     /* Initialize Network Inspector */
