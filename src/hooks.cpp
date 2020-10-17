@@ -4,20 +4,39 @@
 
 #include <Windows.h>
 
-#define GET_RETVAL(ctx)     (ctx->rax)
-#define GET_RETVAL_REF(ctx) (&ctx->rax)
-#define GET_ARG_1(ctx)      (ctx->rcx)
-#define GET_ARG_1_REF(ctx)  (&ctx->rcx)
-#define GET_ARG_2(ctx)      (ctx->rdx)
-#define GET_ARG_2_REF(ctx)  (&ctx->rdx)
-#define GET_ARG_3(ctx)      (ctx->r8)
-#define GET_ARG_3_REF(ctx)  (&ctx->r8)
-#define GET_ARG_4(ctx)      (ctx->r9)
-#define GET_ARG_4_REF(ctx)  (&ctx->r9)
-#define GET_ARG_5(ctx)      (*(uint64_t*)(ctx->rsp + 0x28 + 0x00))
-#define GET_ARG_5_REF(ctx)  ((uint64_t*)(ctx->rsp + 0x28 + 0x00))
-#define GET_ARG_6(ctx)      (*(uint64_t*)(ctx->rsp + 0x28 + 0x08))
-#define GET_ARG_6_REF(ctx)  ((uint64_t*)(ctx->rsp + 0x28 + 0x08))
+#ifdef _M_X64
+    #define GET_RETVAL(ctx)     (ctx->rax)
+    #define GET_RETVAL_REF(ctx) (&ctx->rax)
+    #define GET_ARG_1(ctx)      (ctx->rcx)
+    #define GET_ARG_1_REF(ctx)  (&ctx->rcx)
+    #define GET_ARG_2(ctx)      (ctx->rdx)
+    #define GET_ARG_2_REF(ctx)  (&ctx->rdx)
+    #define GET_ARG_3(ctx)      (ctx->r8)
+    #define GET_ARG_3_REF(ctx)  (&ctx->r8)
+    #define GET_ARG_4(ctx)      (ctx->r9)
+    #define GET_ARG_4_REF(ctx)  (&ctx->r9)
+    #define GET_ARG_5(ctx)      (*(uint64_t*)(ctx->rsp + 0x28 + 0x00))
+    #define GET_ARG_5_REF(ctx)  ((uint64_t*)(ctx->rsp + 0x28 + 0x00))
+    #define GET_ARG_6(ctx)      (*(uint64_t*)(ctx->rsp + 0x28 + 0x08))
+    #define GET_ARG_6_REF(ctx)  ((uint64_t*)(ctx->rsp + 0x28 + 0x08))
+    #define GET_SP(ctx)         (ctx->rsp)
+#else
+    #define GET_RETVAL(ctx)     (ctx->eax)
+    #define GET_RETVAL_REF(ctx) (&ctx->eax)
+    #define GET_ARG_1(ctx)      (*(uint32_t*)(ctx->esp + 0x04 + 0x00))
+    #define GET_ARG_1_REF(ctx)  ((uint32_t*)(ctx->esp + 0x04 + 0x00))
+    #define GET_ARG_2(ctx)      (*(uint32_t*)(ctx->esp + 0x04 + 0x04))
+    #define GET_ARG_2_REF(ctx)  ((uint32_t*)(ctx->esp + 0x04 + 0x04))
+    #define GET_ARG_3(ctx)      (*(uint32_t*)(ctx->esp + 0x04 + 0x08))
+    #define GET_ARG_3_REF(ctx)  ((uint32_t*)(ctx->esp + 0x04 + 0x08))
+    #define GET_ARG_4(ctx)      (*(uint32_t*)(ctx->esp + 0x04 + 0x0c))
+    #define GET_ARG_4_REF(ctx)  ((uint32_t*)(ctx->esp + 0x04 + 0x0c))
+    #define GET_ARG_5(ctx)      (*(uint32_t*)(ctx->esp + 0x04 + 0x10))
+    #define GET_ARG_5_REF(ctx)  ((uint32_t*)(ctx->esp + 0x04 + 0x10))
+    #define GET_ARG_6(ctx)      (*(uint32_t*)(ctx->esp + 0x04 + 0x14))
+    #define GET_ARG_6_REF(ctx)  ((uint32_t*)(ctx->esp + 0x04 + 0x14))
+    #define GET_SP(ctx)         (ctx->esp)
+#endif
 
 namespace NetworkInspector
 {
@@ -194,12 +213,12 @@ namespace NetworkInspector
                 context.buffer           = buf;
                 context.size             = (size_t)len;
                 context.recv_buffer_size = 0;
-                context.backtrace        = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "send"), ctx->rsp);
+                context.backtrace        = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "send"), GET_SP(ctx));
 
                 ni.CallCallback(context);
 
                 // Allows the callback to modify the buffer ptr
-                *GET_ARG_2_REF(ctx) = (uint64_t)context.buffer;
+                *GET_ARG_2_REF(ctx) = (uintptr_t)context.buffer;
                 // Allows the callback to modify the buffer size
                 *GET_ARG_3_REF(ctx) = (int)context.size;
             }
@@ -238,12 +257,12 @@ namespace NetworkInspector
                     context.buffer           = buf;
                     context.size             = (size_t)len;
                     context.recv_buffer_size = 0;
-                    context.backtrace        = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "sendto"), ctx->rsp);
+                    context.backtrace        = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "sendto"), GET_SP(ctx));
 
                     ni.CallCallback(context);
 
                     // Allows the callback to modify the buffer ptr
-                    *GET_ARG_2_REF(ctx) = (uint64_t)context.buffer;
+                    *GET_ARG_2_REF(ctx) = (uintptr_t)context.buffer;
                     // Allows the callback to modify the buffer size
                     *GET_ARG_3_REF(ctx) = (int)context.size;
                 }
@@ -271,7 +290,7 @@ namespace NetworkInspector
                 rd->buf       = buf;
                 rd->len       = len;
                 rd->flags     = flags;
-                rd->backtrace = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "recv"), ctx->rsp);
+                rd->backtrace = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "recv"), GET_SP(ctx));
                 ni.SetContext(Context::RecvContext, rd);
             }
         }
@@ -342,7 +361,7 @@ namespace NetworkInspector
             rd->flags     = flags;
             rd->from      = from;
             rd->fromlen   = fromlen;
-            rd->backtrace = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "recvfrom"), ctx->rsp);
+            rd->backtrace = ni.GetBacktrace(ni.GetExportedFunctionAddress("ws2_32.dll", "recvfrom"), GET_SP(ctx));
 
             ni.SetContext(Context::RecvFromContext, rd);
         }

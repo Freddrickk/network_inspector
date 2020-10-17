@@ -1,5 +1,6 @@
 #include <Windows.h>
 
+#ifdef _M_X64
 int ProcessGetBacktrace(uintptr_t rip, uintptr_t rsp, uintptr_t* backtrace, int nb_frame)
 {
     CONTEXT ctx;
@@ -37,3 +38,12 @@ int ProcessGetBacktrace(uintptr_t rip, uintptr_t rsp, uintptr_t* backtrace, int 
     }
     return frame_idx;
 }
+#else
+int ProcessGetBacktrace(uintptr_t rip, uintptr_t rsp, uintptr_t* backtrace, int nb_frame)
+{
+    UNREFERENCED_PARAMETER(rip);
+    UNREFERENCED_PARAMETER(rsp);
+    int nb_frames_to_skip = 0;
+    return CaptureStackBackTrace(nb_frames_to_skip, nb_frame, (void**)backtrace, nullptr);
+}
+#endif

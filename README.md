@@ -18,6 +18,8 @@ cmake build -A x64 ..
 cmake --build .
 ```
 
+Note: Use `cmake build -A Win32 ..` to build the 32-bit version
+
 ## Usage
 
 This is an example of a callback:
@@ -90,5 +92,4 @@ void StopNetworkInspector()
 ## Limitations
 
 - Only supports network communication based on Linux-style socket usage (socket/send/recv/accept/listen/bind/connect)
-- Only supports 64-bit
 - Windows only
