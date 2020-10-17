@@ -6,7 +6,7 @@
 #include <winsock.h>
 
 constexpr char* ip_addr       = "127.0.0.1";
-constexpr unsigned short port = 63210;
+constexpr unsigned short port = 31337;
 size_t test_number            = 0;
 
 void NetworkInspectorCallback(NetworkInspector::NetworkContext& nc)

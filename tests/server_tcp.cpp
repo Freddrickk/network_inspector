@@ -5,7 +5,7 @@
 #include <cstdio>
 
 constexpr char* ip_addr       = "127.0.0.1";
-constexpr unsigned short port = 63210;
+constexpr unsigned short port = 31337;
 size_t test_number            = 0;
 
 void NetworkInspectorCallback(NetworkInspector::NetworkContext& nc)
@@ -149,6 +149,8 @@ int main()
         WSACleanup();
         return -1;
     }
+    int optval = 1;
+    //setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char*)&optval, sizeof(optval));
 
     sockaddr_in addr;
     addr.sin_family      = AF_INET;
@@ -159,6 +161,7 @@ int main()
     if (bind(s, (sockaddr*)&addr, sizeof(addr)) != 0)
     {
         puts("Error: bind failed");
+        printf("WSAGetLastError: %d\n", WSAGetLastError());
         closesocket(s);
         WSACleanup();
         return -1;
