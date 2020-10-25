@@ -91,5 +91,5 @@ void StopNetworkInspector()
 
 ## Limitations
 
-- Only supports network communication based on Linux-style socket usage (socket/send/recv/accept/listen/bind/connect)
+- Only supports network communication based on Berkeley sockets API (socket/send/recv/accept/listen/bind/connect)
 - Windows only
