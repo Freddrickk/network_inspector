@@ -8,7 +8,8 @@
 
 namespace NetworkInspector
 {
-    NetworkInspectorManager::NetworkInspectorManager(): m_is_started(false), m_is_htp_owner(false), m_locks(), m_contexts(), m_htp()
+    NetworkInspectorManager::NetworkInspectorManager()
+        : m_is_started(false), m_is_htp_owner(false), m_locks(), m_callback_mutex(), m_contexts(), m_htp()
     {
     }
 
@@ -86,6 +87,7 @@ namespace NetworkInspector
 
     void NetworkInspectorManager::CallCallback(NetworkContext& ctx)
     {
+        std::lock_guard<std::mutex> lock(m_callback_mutex);
         m_cb(ctx);
     }
 

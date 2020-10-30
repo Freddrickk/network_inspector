@@ -126,6 +126,7 @@ namespace NetworkInspector
         bool m_is_htp_owner;
         std::shared_ptr<void> m_contexts[static_cast<int>(Context::CONTEXT_NB_ELEM)];
         std::mutex m_locks[static_cast<int>(Lock::LOCK_NB_ELEM)];
+        std::mutex m_callback_mutex;
         std::set<unsigned long> m_excluded_ips;
         std::set<unsigned short> m_excluded_ports;
         std::map<uintptr_t, std::shared_ptr<Socket>> m_sockets;
